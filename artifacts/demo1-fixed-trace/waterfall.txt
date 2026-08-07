@@ -1,0 +1,35 @@
+trace 2c81c13aa792701ba03ec6e77921526d  total=324.9ms  spans=13
+
+  GET /dashboard                 frontend                   324.9ms  |############################################
+                                                                      {'dashboard.slowest_dependency_ms': 324, 'dashboard.strategy': 'concurrent', 'dashboard.sum_of_dependency_ms': 765, 'dashboard.total_ms': 324, 'demo.mode': 'fixed', 'http.response.status_code': 200}
+    fetch inventory-service      frontend                   324.9ms  |###########################################
+                                                                      {'demo.mode': 'fixed', 'dependency.elapsed_ms': 324, 'dependency.name': 'inventory-service'}
+      HTTP GET                   frontend                   324.8ms  |###########################################
+                                                                      {'http.response.status_code': 200}
+        GET /fetch               inventory-service          321.8ms  |###########################################
+                                                                      {'http.response.status_code': 200}
+          inventory-service.query inventory-service          321.7ms  |###########################################
+                                                                      {'demo.mode': 'fixed', 'dependency.latency_ms': 320, 'dependency.name': 'inventory-service'}
+    fetch profile-service        frontend                   185.3ms  |#########################
+                                                                      {'demo.mode': 'fixed', 'dependency.elapsed_ms': 185, 'dependency.name': 'profile-service'}
+      HTTP GET                   frontend                   185.3ms  |#########################
+                                                                      {'http.response.status_code': 200}
+        GET /fetch               profile-service            181.9ms  |########################
+                                                                      {'http.response.status_code': 200}
+          profile-service.query  profile-service            181.9ms  |########################
+                                                                      {'demo.mode': 'fixed', 'dependency.latency_ms': 180, 'dependency.name': 'profile-service'}
+    fetch recommendation-service frontend                   255.5ms  |##################################
+                                                                      {'demo.mode': 'fixed', 'dependency.elapsed_ms': 255, 'dependency.name': 'recommendation-service'}
+      HTTP GET                   frontend                   255.4ms  |##################################
+                                                                      {'http.response.status_code': 200}
+        GET /fetch               recommendation-service     252.1ms  |##################################
+                                                                      {'http.response.status_code': 200}
+          recommendation-service.query recommendation-service     251.9ms  |##################################
+                                                                      {'demo.mode': 'fixed', 'dependency.latency_ms': 250, 'dependency.name': 'recommendation-service'}
+
+  root span                     324.9ms
+  sum of child spans            765.6ms   (3 children)
+  wall clock they cover         324.9ms
+  concurrency factor             2.36   overlapping
+
+  The children ran at the same time. Latency is the slowest one.

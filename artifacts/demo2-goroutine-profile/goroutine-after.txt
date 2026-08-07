@@ -1,0 +1,13 @@
+
+FIXED
+
+Runtime metric before:
+go_goroutines 7
+
+Sending the same 100 cancelled requests...
+
+Runtime metric after:
+go_goroutines 7
+
+pprof diagnosis:
+no accumulated application goroutines blocked on channel send

@@ -1,0 +1,21 @@
+
+BROKEN
+
+Runtime metric before:
+go_goroutines 7
+
+Sending 100 requests that time out before work completes...
+
+Runtime metric after:
+go_goroutines 107
+
+pprof diagnosis:
+100 goroutines blocked on channel send
+
+goroutine 132 [chan send]:
+main.handleWorkBroken.func1()
+	server.go:176
+created by main.handleWorkBroken in goroutine 130
+	server.go:174
+
+(the other 99 are the same stack)

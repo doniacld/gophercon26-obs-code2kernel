@@ -1,0 +1,1 @@
+{"checksum_head":[1852204774866425125,5387141787440594725,11421846288246327781],"cpu_time_ms":1600,"critical_pct":0,"gomaxprocs":11,"items":16,"lock_wait_ms":0.001,"mode":"fixed","parallelism":"parallel: 16 tasks at once, 11 processors, 13.0x the serial rate","peak_working":16,"speedup":13.04,"task_ms":100,"wall_ms":122.689}

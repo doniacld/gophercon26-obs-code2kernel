@@ -1,0 +1,19 @@
+# Scrape config for demo 3. One target, one job, nothing else.
+#
+# scrape_interval is 1s rather than the usual 15s because the demo's whole
+# workload lasts under a minute. rate() over a 30s window needs several points
+# inside that window to say anything, and at 15s it would have two.
+#
+# __TARGET__ is substituted by `make prometheus`:
+#   host.docker.internal:6062  Prometheus in Docker, the service on the host
+#   localhost:6062             both on the host (a native prometheus binary)
+# The Makefile passes --add-host=host.docker.internal:host-gateway, which is what
+# makes the first spelling resolve on Linux as well as on Docker Desktop.
+global:
+  scrape_interval: 1s
+  evaluation_interval: 1s
+
+scrape_configs:
+  - job_name: demo3
+    static_configs:
+      - targets: ["__TARGET__"]

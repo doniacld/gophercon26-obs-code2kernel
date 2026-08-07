@@ -1,0 +1,88 @@
+# Two services, one image, two CPU quotas.
+#
+# This is the only demo in the repository that needs a container runtime to make
+# its point, because the cgroup *is* the subject. Demos 2 and 3 change Go code and
+# hold the environment still; this one holds the code still — same image, same
+# digest, same entrypoint, same flags — and changes only the quota around it.
+#
+# Each service declares the same ports, so only one can run at a time. That is
+# deliberate rather than a limitation: the audience must see one service at a
+# time answering on :8083, not three, or "it got slow" loses its subject. The
+# profiles enforce it — a bare `docker compose up` starts nothing.
+#
+#   docker compose --profile baseline up -d
+#
+# `deploy.resources.limits.cpus` is what Docker Compose v2 translates into the
+# cgroup's cpu.max, exactly as `docker run --cpus=` does. Verified: 0.25 becomes
+# "25000 100000" in /sys/fs/cgroup/cpu.max inside the container.
+
+x-service: &service
+  build:
+    context: ..
+    dockerfile: demo-04-cpu-quota/Dockerfile
+  image: gcdemo-demo4-service:latest
+  ports:
+    - "${APP_PORT:-8083}:8083"
+    - "${DIAG_PORT:-6063}:6063"
+  # A readiness probe rather than a sleep in stage.sh. Under a 0.25-core quota the
+  # binary takes visibly longer to start answering, which is itself part of the
+  # lesson — and exactly why a fixed sleep would flake here and nowhere else.
+  healthcheck:
+    test: ["CMD", "curl", "-fsS", "http://localhost:8083/healthz"]
+    interval: 1s
+    timeout: 2s
+    retries: 30
+    start_period: 1s
+
+services:
+  # The bug. 0.25 cores against a request that wants ~1.17 core-seconds of CPU:
+  # every 100 ms enforcement period ends with runnable work forbidden to continue.
+  #
+  # Note what this does NOT do — it does not set GOMAXPROCS, and it does not need
+  # to. On Go 1.25+ the runtime reads this quota itself and lands on GOMAXPROCS=2.
+  # The runtime adapts and it is still not enough; that is the surprise.
+  # "baseline", not "throttled", all the way down — the service key, the container
+  # name, the profile and the label. Every one of those is typed or printed on
+  # stage: `docker compose --profile baseline up`, `docker exec gcdemo-demo4-baseline
+  # cat /sys/fs/cgroup/cpu.stat`, and the service's own `"mode"` field in every
+  # reply. Naming it "throttled" would answer the demo in act 1's first command,
+  # before a single tool has been used.
+  #
+  # "baseline" is also just true: it is the state the service is in when the
+  # complaint arrives, and what the corrected quota is measured against.
+  baseline:
+    <<: *service
+    container_name: gcdemo-demo4-baseline
+    profiles: ["baseline"]
+    command: ["-label", "baseline"]
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+
+  # The fix: a quota aligned with the workload's measured demand, not the absence
+  # of a quota. Removing the limit entirely is faster still and is the wrong
+  # answer — a service with no CPU limit is a service that can starve its
+  # neighbours. The point of this demo is that the limit was wrong, not that limits
+  # are wrong.
+  #
+  # 3 cores is measured, not guessed — and the measurement is the interesting part.
+  # `make bench` reports ~73 ms of CPU per job, so 16 jobs want ~1.17
+  # core-seconds; asked for all at once, the naive answer is "as many cores as you
+  # have". 3 is where nr_throttled reaches 0 on a 4-CPU host without asking for the
+  # whole machine.
+  #
+  # So the lesson is not "compute demand and set that". A correct quota is demand
+  # plus headroom — for the GC, the runtime's own threads, and work that does not
+  # align with period boundaries — and the only way to know how much headroom is to
+  # watch nr_throttled while you tighten it. `make investigate` prints those
+  # counters.
+  corrected:
+    <<: *service
+    container_name: gcdemo-demo4-corrected
+    profiles: ["corrected"]
+    command: ["-label", "corrected"]
+    deploy:
+      resources:
+        limits:
+          cpus: "3"

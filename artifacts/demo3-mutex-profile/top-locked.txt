@@ -1,0 +1,9 @@
+File: compute
+Type: delay
+Time: 2026-07-30 20:59:41 CEST
+Showing nodes accounting for 110.92s, 100% of 110.92s total
+Dropped 66 nodes (cum <= 0.55s)
+      flat  flat%   sum%        cum   cum%
+   110.92s   100%   100%    110.92s   100%  sync.(*Mutex).Unlock
+         0     0%   100%    110.92s   100%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).brokenTask
+         0     0%   100%    110.92s   100%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).run.func1

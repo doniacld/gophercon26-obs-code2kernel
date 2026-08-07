@@ -1,0 +1,35 @@
+trace 894c13d816a4425c3d64afa0508bcadb  total=767.2ms  spans=13
+
+  GET /dashboard                 frontend                   767.2ms  |############################################
+                                                                      {'dashboard.slowest_dependency_ms': 327, 'dashboard.strategy': 'sequential', 'dashboard.sum_of_dependency_ms': 766, 'dashboard.total_ms': 766, 'demo.mode': 'broken', 'http.response.status_code': 200}
+    fetch profile-service        frontend                   184.7ms  |##########
+                                                                      {'demo.mode': 'broken', 'dependency.elapsed_ms': 184, 'dependency.name': 'profile-service'}
+      HTTP GET                   frontend                   184.5ms  |##########
+                                                                      {'http.response.status_code': 200}
+        GET /fetch               profile-service            182.2ms  |##########
+                                                                      {'http.response.status_code': 200}
+          profile-service.query  profile-service            182.1ms  |##########
+                                                                      {'demo.mode': 'broken', 'dependency.latency_ms': 180, 'dependency.name': 'profile-service'}
+    fetch recommendation-service frontend                   254.2ms  |          ##############
+                                                                      {'demo.mode': 'broken', 'dependency.elapsed_ms': 254, 'dependency.name': 'recommendation-service'}
+      HTTP GET                   frontend                   254.2ms  |          ##############
+                                                                      {'http.response.status_code': 200}
+        GET /fetch               recommendation-service     252.6ms  |          ##############
+                                                                      {'http.response.status_code': 200}
+          recommendation-service.query recommendation-service     252.5ms  |          ##############
+                                                                      {'demo.mode': 'broken', 'dependency.latency_ms': 250, 'dependency.name': 'recommendation-service'}
+    fetch inventory-service      frontend                   327.7ms  |                         ##################
+                                                                      {'demo.mode': 'broken', 'dependency.elapsed_ms': 327, 'dependency.name': 'inventory-service'}
+      HTTP GET                   frontend                   327.7ms  |                         ##################
+                                                                      {'http.response.status_code': 200}
+        GET /fetch               inventory-service          322.4ms  |                         ##################
+                                                                      {'http.response.status_code': 200}
+          inventory-service.query inventory-service          322.3ms  |                         ##################
+                                                                      {'demo.mode': 'broken', 'dependency.latency_ms': 320, 'dependency.name': 'inventory-service'}
+
+  root span                     767.2ms
+  sum of child spans            766.6ms   (3 children)
+  wall clock they cover         766.6ms
+  concurrency factor             1.00   sequential — a staircase
+
+  The children never overlapped. End-to-end latency is their sum.

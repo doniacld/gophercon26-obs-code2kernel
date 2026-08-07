@@ -1,0 +1,43 @@
+# The only external dependency in this repository: a trace backend for demo 1.
+#
+# Demos 2, 3 and 4 need nothing at all — they are plain Go processes, profiled
+# with the tools that ship with Go. Fewer moving parts than a conference network
+# can break.
+#
+# Jaeger all-in-one is used rather than Grafana Tempo because it is one
+# container, needs no configuration file, and has a query API this repository's
+# scripts/dump-trace.py can read — which is what makes the trace waterfall
+# printable in a terminal when a projector refuses to show a browser.
+#
+# No Prometheus. Demo 1's argument is about span boundaries inside one request,
+# and a metrics pipeline would add a container, a scrape config and a second UI
+# without changing what the audience sees. Where a demo needs a counter it keeps
+# its own and serves it on /stats.
+
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    container_name: gcdemo-jaeger
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"   # UI and query API
+      - "${OTLP_HTTP_PORT:-4318}:4318"     # OTLP/HTTP — what the demos export to
+      - "${OTLP_GRPC_PORT:-4317}:4317"     # OTLP/gRPC, unused but free to expose
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      # Keep everything in memory: no volume, no migration, no state surviving a
+      # `make clean` to confuse the next rehearsal.
+      SPAN_STORAGE_TYPE: memory
+      MEMORY_MAX_TRACES: "20000"
+      # Demo 1 deliberately produces slow spans. The default sampling is
+      # all-you-send, which is what we want; say so explicitly so nobody has to
+      # wonder whether a missing span was sampled away.
+      COLLECTOR_ZIPKIN_HOST_PORT: ""
+    # A readiness probe rather than a sleep in the Makefile. 14269 is Jaeger's
+    # admin port; /: returns 200 once the collector is actually accepting spans.
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269/"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 2s
+    restart: unless-stopped

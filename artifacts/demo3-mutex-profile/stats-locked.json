@@ -1,0 +1,13 @@
+{
+  "requests": 15,
+  "tasks": 8,
+  "working_now": 0,
+  "peak_working": 1,
+  "stored_keys": 16,
+  "store_writes": 128,
+  "cancelled_batches": 0,
+  "total_lock_wait_ms": 2801.968,
+  "avg_lock_wait_ms": 350.246,
+  "goroutines": 135,
+  "gomaxprocs": 11
+}

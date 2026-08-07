@@ -1,0 +1,26 @@
+Main binary filename not available.
+Type: delay
+Showing nodes accounting for 295.09s, 100% of 295.13s total
+Dropped 17 nodes (cum <= 1.48s)
+Showing top 20 nodes out of 25
+      flat  flat%   sum%        cum   cum%
+   185.40s 62.82% 62.82%    185.40s 62.82%  sync.(*WaitGroup).Wait
+    48.23s 16.34% 79.16%     48.23s 16.34%  runtime.chanrecv1
+    36.45s 12.35% 91.51%     36.45s 12.35%  runtime.gcMarkDone
+    25.01s  8.47%   100%     25.01s  8.47%  runtime.selectgo
+         0     0%   100%    185.40s 62.82%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).Run
+         0     0%   100%    185.40s 62.82%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).RunFixed
+         0     0%   100%     35.52s 12.04%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).expensiveWork
+         0     0%   100%     36.18s 12.26%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).fixedTask
+         0     0%   100%    185.40s 62.82%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).run
+         0     0%   100%     36.18s 12.26%  github.com/doniacld/go-observability-demos/demo-03-lock-contention/internal/work.(*Store).run.func1
+         0     0%   100%    185.40s 62.82%  main.(*service).compute
+         0     0%   100%    210.41s 71.29%  net/http.(*ServeMux).ServeHTTP
+         0     0%   100%    210.43s 71.30%  net/http.(*conn).serve
+         0     0%   100%    210.41s 71.29%  net/http.HandlerFunc.ServeHTTP
+         0     0%   100%    210.41s 71.29%  net/http.serverHandler.ServeHTTP
+         0     0%   100%     25.01s  8.48%  net/http/pprof.Trace
+         0     0%   100%     25.01s  8.47%  net/http/pprof.sleep
+         0     0%   100%     23.40s  7.93%  runtime.(*traceAdvancerState).start.func1
+         0     0%   100%     48.23s 16.34%  runtime.(*wakeableSleep).sleep
+         0     0%   100%     36.17s 12.26%  runtime.deductAssistCredit

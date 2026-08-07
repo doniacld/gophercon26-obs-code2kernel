@@ -1,0 +1,34 @@
+# Compiled binaries. Each demo builds into its own bin/.
+bin/
+
+# Per-demo runtime state: PID files, logs, and the recorded mode. Deleted by
+# `make clean`; never useful to anyone else.
+.run/
+
+# Captured profiles, traces and flame graphs.
+#
+# The binary captures are deliberately not committed: several megabytes each,
+# specific to the machine and the Go version that produced them, and a stale one
+# is worse than none — it invites you to explain numbers your code no longer
+# produces. `make artifacts` recreates them in about two minutes.
+#
+# The directory structure and the small text summaries *are* committed. One
+# directory per artifact kind, each with a .gitkeep, so the capture scripts have
+# somewhere to write and a fresh clone shows what a capture produces. The .txt,
+# .json and .md summaries are the fallback that survives a laptop swap: if no
+# tool runs on stage, the numbers are still on disk.
+artifacts/**
+!artifacts/*/
+!artifacts/**/.gitkeep
+!artifacts/**/*.txt
+!artifacts/**/*.json
+!artifacts/**/*.md
+
+# Ad-hoc captures that land outside artifacts/ when following the READMEs by hand.
+*.pprof
+*.folded
+trace*.out
+!scripts/*.sh
+
+# go tool pprof and go tool trace scratch space
+pprof/
